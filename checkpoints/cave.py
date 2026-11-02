@@ -18,7 +18,7 @@ def cave(character_name, hp, inventory):
         if "rope" in inventory and "key" in inventory:
             print("\nCongratulations! You have collected both the rope and the key.")
             print("You can now proceed towards the Old Bridge.")
-            return hp, inventory
+            return "bridge", hp, inventory
 
         print("\nAvailable paths:")
         print("1. The path to the left")
