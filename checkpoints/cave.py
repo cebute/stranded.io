@@ -24,7 +24,6 @@ def cave(character_name, hp, inventory):
         print("1. The path to the left")
         print("2. The path to the right")
         print("3. Check inventory")
-        print("4. Leave the cave")
 
         choice = input("Make a choice: ").strip().lower()
 
@@ -124,12 +123,6 @@ def cave(character_name, hp, inventory):
                     print(f"- {item}")
             else:
                 print("Your inventory is empty.")
-
-        # LEAVE CAVE
-        elif choice == "4":
-
-            print("You decide to leave the cave.")
-            return hp, inventory
 
         else:
             print("Invalid choice. Please select 1, 2, 3 or 4.")
