@@ -1,71 +1,80 @@
-def jungle(
-    character_name,
-    hp,
-    inventory
-):
+def jungle(character_name, hp, inventory):
+    print("\n" + "="*50)
+    print("🌴 CHECKPOINT: THE JUNGLE")
+    print("="*50)
     print(
-        f"You have {hp} HP left. You have to do something, otherwise you won't make it.\n"
+        f"You have {hp} HP left. You have to do something, otherwise you won't make it.\n\n"
         "1. Treat your wounds\n"
         "2. Try some herbs you see. Perhaps it could help\n"
-        "What are you going to do?\n"
     )
 
-    # Start with an empty or invalid choice to trigger the loop
+    # First decision loop: Health status
     choice = "0"
-    
     while choice not in ["1", "2"]:
-        choice = input("Make a choice: ").strip()
+        choice = input("What are you going to do? ").strip()
 
         if choice == "1":
             hp += 20
-            # If inventory is a list, you can remove the kit like this:
             if "first_aid_kit" in inventory:
                 inventory.remove("first_aid_kit")
-                print("💉 You use the First Aid kit to bandage your bleeding wounds.")
+                print("\n💉 You use the First Aid kit to bandage your bleeding wounds.")
             else:
-                print("You don't have a first aid kit! You try your best without tools.")
+                print("\nYou don't have a first aid kit! You try your best to patch yourself up with large leaves.")
                 
-            print(f"Feel a lot better after a few minutes. [HP: {hp}]. But you still need to find food and clean water.")
-            # Move on to the next part of the jungle level here...
+            print(f"You feel a lot better after a few minutes. [HP: {hp}]. But you still need to find food and clean water.")
 
         elif choice == "2":
-            print("\n🤢 Should have taken those herb classes seriously. It was poisonous! DEATH!!!!")
+            print("\n🤢 Should have taken those herb classes seriously. It was highly poisonous! DEATH!!!!")
             hp = 0
             return "game_over", hp, inventory
 
         else:
             print("\nGod abeg... That's not an option. Try again!")
-            # The loop will automatically repeat because choice is still not "1" or "2"
 
+    # Second decision loop: Survival and Destination
     print(
-        "While treating yourself, you begin to hear the sound of what sounds lik a brook. You go to check it out and yep, there's a clear stream. Looking around you see some fruit trees and even a deer feeding some yards away. Are feeling lucky;\n"
+        "\n🎵 While resting, you hear the distant sound of rushing water. You follow it and find a clear stream!\n"
+        "Looking around, you see some fruit trees and a deer grazing a few yards away.\n"
+        "Are you feeling lucky?\n\n"
         "1. Try hunting the deer\n"
-        "2. Try your luck at fishing\n"
-        "3. Get some fruits from the tall trees around you\n"
+        "2. Try your luck at fishing in the stream\n"
+        "3. Climb the trees to gather fruits and get a better view\n"
     )
 
+    has_fished = False
 
     while True:
-        choice = input("What's your decision: ")
+        choice = input("What's your decision? ").strip()
         
         if choice == "1":
             print(
-                "You were attacked and killed while trying to hunt a deer by a very hungry bear...DEATH!!!!!"
+                "\n🐻 While tracking the deer, a massive, territorial bear ambushes you!\n"
+                "Weak and weaponless, you stand no chance. DEATH!!!!!"
             )
-            return "game_over"
+            hp = 0
+            return "game_over", hp, inventory
+            
         elif choice == "2":
-            print(
-                "You construct a make shift fishing tool and got lucky. You caught 3 fishes before your line broke."
-            )
+            if not has_fished:
+                print(
+                    "\n🐟 You construct a makeshift fishing tool using your wire string and get lucky!\n"
+                    "You catch 3 fish before your line snaps. You cook and eat them over a small fire.\n"
+                    "Your hunger is satisfied! Restored 15 HP."
+                )
+                hp += 15
+                has_fished = True
+                print(f"[HP: {hp}] You are fed, but you still need to find a path out of here. What next?")
+            else:
+                print("\nYour fishing line is already broken! You need to choose another option.")
+                
         elif choice == "3":
             print(
-                "You climb a tree and while gathering some fruits you sot a lighthouse in the distance. looks like you found your next destination."
+                "\n🐒 You climb a tall tree and gather plenty of wild fruits.\n"
+                "From the high canopy, you spot a lighthouse far in the distance!\n"
+                "To head toward it, you must descend into a dark, rocky chasm leading to a cave system..."
             )
+            # Instantly transitions to the cave level smoothly
+            return "cave", hp, inventory
+            
         else:
-            print("\nGod abeg...")
-
-    # inventory = {
-    #     "fruits",
-    #     "water",
-    #     "dried_fish"
-    # }
+            print("\nGod abeg... That's not a valid survival choice. Choose 1, 2, or 3.")

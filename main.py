@@ -1,5 +1,6 @@
 from checkpoints.beach import beach
 from checkpoints.jungle import jungle
+from checkpoints.cave import cave
 
 def stranded_io_runner():
     print(
@@ -45,16 +46,7 @@ def stranded_io_runner():
             
         # 3. CAVE LEVEL
         elif checkpoint == "cave":
-            print(r"""
-               ______ ___ _   __ ____ 
-              / ____//   || | / // ____/
-             / /    / /| || |/ // __/   
-            / /___ / ___ || / // /___   
-            \____//_/  |_||_/ /_____/   
-            """)
-            print(f"\n{character_name} steps into a dark, damp cave...")
-            # Placeholder for your cave level code
-            break
+            level_payload = cave(character_name, hp, inventory)
             
         # 4. BRIDGE LEVEL
         elif checkpoint == "bridge":
