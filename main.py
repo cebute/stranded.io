@@ -2,16 +2,10 @@ from checkpoints.beach import beach
 from checkpoints.jungle import jungle
 from checkpoints.cave import cave
 from checkpoints.bridge import bridge
+from ui.intro_ui import show_intro
 
 def stranded_io_runner():
-    print(
-        "==================================================\n"
-        "Welcome to Stranded IO. May God be with you...\n"
-        "You wake up on a forsaken island.\n"
-        "Parched, hungry and bleeding amongst ship wreckage.\n"
-        "You try to recall your name...\n"
-        "=================================================="
-    )
+    show_intro()
 
     character_name = input("My name is: ").strip() or "Survivor"
     hp = 40
