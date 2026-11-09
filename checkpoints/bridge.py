@@ -1,158 +1,90 @@
-def bridge(character_name, hp, inventory):
+from ui.bridge_ui import (
+    show_bridge_arrival,
+    show_bridge_death,
+    show_bridge_menu,
+    show_gate_opens,
+    show_guardian_correct,
+    show_guardian_refuses,
+    show_guardian_riddle,
+    show_guardian_wrong,
+    show_has_rope,
+    show_invalid_bridge_choice,
+    show_jump_fail,
+    show_no_key,
+    show_no_rope,
+    show_rope_crossing,
+    show_wait_storm,
+)
+# from ui.theme import ask, show_inventory
 
-    print(
-        f"\nWelcome to the Old Bridge, {character_name}!\n"
-        "After leaving the cave, you arrive at an old wooden bridge.\n"
-        "Unfortunately, part of the bridge has collapsed.\n"
-        "Strong winds are shaking the remaining wooden planks.\n"
-    )
+
+def bridge(character_name, hp, inventory):
+    show_bridge_arrival(character_name, hp)
 
     # Check whether the player has the rope
     if "rope" not in inventory:
+        show_no_rope()
+        return "cave", hp, inventory
 
-        print(
-            "You need a rope to secure the broken bridge.\n"
-            "Unfortunately, you don't have one.\n"
-            "You must return to the cave."
-        )
-
-        return hp, inventory, False
-
-    print(
-        "Fortunately, you have the rope you collected from the cave.\n"
-        "You can use it to secure your crossing.\n"
-    )
+    show_has_rope()
 
     while True:
 
         if hp <= 0:
-            print("You have run out of energy!")
-            return hp, inventory, False
+            show_bridge_death(character_name, hp)
+            return "game_over", hp, inventory
 
-        print(
-            "\nWhat would you like to do?\n"
-            "1. Use the rope to secure the bridge.\n"
-            "2. Attempt to jump across.\n"
-            "3. Wait for the storm to pass.\n"
-            "4. Check inventory.\n"
-        )
-
-        choice = input("Make a choice: ").strip().lower()
+        show_bridge_menu()
+        choice = ask("Make a choice:").lower()
 
         # OPTION 1: USE ROPE
         if choice == "1":
-
-            print(
-                "\nYou carefully tie the rope around a strong wooden post.\n"
-                "You use it to support yourself while crossing.\n"
-                "After a difficult journey, you successfully reach the other side!"
-            )
-
+            show_rope_crossing(character_name, hp)
             break
 
         # OPTION 2: JUMP ACROSS
         elif choice == "2":
-
-            print(
-                "\nYou attempt to jump across the broken section.\n"
-                "Unfortunately, you lose your balance and fall back onto the bridge.\n"
-                "You lose 2 HP."
-            )
-
             hp = max(0, hp - 2)
-
-            print(f"Remaining HP: {hp}")
+            show_jump_fail(character_name, hp)
 
         # OPTION 3: WAIT FOR THE STORM
         elif choice == "3":
-
-            print(
-                "\nYou decide to wait for the storm to calm down.\n"
-                "However, the cold weather drains your energy.\n"
-                "You lose 1 HP."
-            )
-
             hp = max(0, hp - 1)
-
-            print(f"Remaining HP: {hp}")
+            show_wait_storm(character_name, hp)
 
         # OPTION 4: CHECK INVENTORY
         elif choice == "4":
-
-            print("\nYour inventory:")
-
-            if inventory:
-                for item in inventory:
-                    print(f"- {item}")
-            else:
-                print("Your inventory is empty.")
+            print(inventory)
 
         else:
-            print("Invalid choice. Please select 1, 2, 3 or 4.")
+            show_invalid_bridge_choice()
 
     # CHECK FOR KEY BEFORE UNLOCKING THE GATE
     if "key" not in inventory:
+        show_no_key()
+        return "cave", hp, inventory
 
-        print(
-            "\nYou successfully cross the bridge but discover an ancient gate.\n"
-            "Unfortunately, the gate is locked.\n"
-            "You need a key to unlock it.\n"
-            "Return to the cave and search for the key."
-        )
-
-        return hp, inventory, False
-
-    print(
-        "\nYou discover an ancient gate on the other side of the bridge.\n"
-        "You insert your key into the lock, and the gate opens!"
-    )
+    show_gate_opens()
 
     # GUARDIAN'S PUZZLE
-    print(
-        "\nSuddenly, an old guardian appears.\n"
-        "'Before you proceed, answer my riddle.'\n"
-        "\nWhat has cities but no houses, forests but no trees, "
-        "and rivers but no water?\n"
-        "\n1. A painting"
-        "\n2. A map"
-        "\n3. A book"
-        "\n4. A mirror"
-    )
-
+    show_guardian_riddle()
     attempts = 2
 
     while attempts > 0:
-
-        answer = input("\nChoose your answer: ").strip()
+        answer = ask("Choose your answer:")
 
         if answer == "2":
-
-            print(
-                "\nCorrect! The guardian is impressed by your intelligence.\n"
-                "He steps aside and allows you to proceed.\n"
-                "You can now see the lighthouse in the distance!"
-            )
-
-            return hp, inventory, True
+            show_guardian_correct(character_name, hp)
+            return "lighthouse", hp, inventory
 
         else:
-
             attempts -= 1
             hp = max(0, hp - 1)
-
-            print("\nIncorrect answer! You lose 1 HP.")
-            print(f"Remaining HP: {hp}")
+            show_guardian_wrong(character_name, hp, attempts > 0 and hp > 0)
 
             if hp <= 0:
-                print("You have run out of energy. Game over!")
-                return hp, inventory, False
+                show_bridge_death(character_name, hp)
+                return "game_over", hp, inventory
 
-            if attempts > 0:
-                print("You have one final attempt.")
-
-    print(
-        "\nThe guardian refuses to let you proceed.\n"
-        "You must return and try again."
-    )
-
-    return hp, inventory, False
+    show_guardian_refuses()
+    return "bridge", hp, inventory

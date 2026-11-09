@@ -1,0 +1,11 @@
+{
+    "character_name": "character_name",
+    "hp": 0,
+    "inventory": [
+        "first_aid_kit",
+        "empty_water_bottle",
+        "wire_string",
+        "lighter"
+    ],
+    "checkpoint": "game_over"
+}

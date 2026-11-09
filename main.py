@@ -3,16 +3,20 @@ from checkpoints.jungle import jungle
 from checkpoints.cave import cave
 from checkpoints.bridge import bridge
 from ui.intro_ui import show_intro
+from file_manager.storage import save_game, load_game
 
 def stranded_io_runner():
     show_intro()
+
+    checkpoint = "beach"
+    # game_data=load_game()
+    # saved_character_name, hp, inventory, checkpoint = game_data
 
     character_name = input("My name is: ").strip() or "Survivor"
     hp = 40
     inventory = []
 
     # Game starts at the beach
-    checkpoint = "beach"
 
     while True:
         # Check for game over or death conditions first
@@ -65,7 +69,9 @@ def stranded_io_runner():
             print("\nWhoops, God abeg... Something went wrong with the island paths.")
             break
 
+    # save_game(character_name, hp, inventory, checkpoint)
     print("\nGo and rest.\n")
+
 
 if __name__ == "__main__":
     stranded_io_runner()
