@@ -1,33 +1,60 @@
 """Everything the player sees at the Old Bridge. No game rules live here."""
 
 from ui.theme import (
-    ASH, BONE, RUST,
-    ground_line, level_header, say, show_status, slow_print,
+    ASH, BONE, RUST, WIDTH,
+    ground_line, level_header, say, show_status, slow_print, spaced,
 )
 
+# What each guardian says after a wrong answer.
+RETRY_LINES = {
+    "first": "The guardian demands another attempt.",
+    "second": "The guardian asks you to try again.",
+    "final": "The guardian demands another attempt.",
+}
+
+
+def _scene_title(title):
+    """A smaller heading inside the level, for each guardian."""
+    print()
+    print(ground_line())
+    say(f"{spaced(title):^{WIDTH}}", BONE)
+    print(ground_line())
+    print()
+
+
+def _speak(lines, color, repeat):
+    """Type the lines out the first time, print them instantly when repeated."""
+    show = say if repeat else slow_print
+    for line in lines:
+        show(line, color)
+
+
+def _show_options(options):
+    """Print numbered answer options."""
+    print()
+    for number, option in enumerate(options, 1):
+        say(f"  {number}. {option}")
+    print()
+
+
+# ---------- The bridge itself ----------
 
 def show_bridge_arrival(name, hp):
     """Header and the broken bridge."""
     level_header("THE OLD BRIDGE", "where the wind tests every plank")
     show_status(name, hp)
     print()
-    slow_print("After leaving the cave, you arrive at an old wooden bridge.", ASH)
-    slow_print("Part of it has collapsed.", BONE)
-    slow_print("Strong winds shake the remaining planks.", ASH)
-    print()
+    slow_print("You arrive at an old wooden bridge.", ASH)
+    slow_print("Part of the bridge has collapsed.", BONE)
+    slow_print("Strong winds shake the remaining wooden planks.", ASH)
 
 
 def show_no_rope():
     """The player arrived without a rope."""
-    slow_print("You need a rope to secure the broken bridge.", ASH)
-    slow_print("You don't have one.", RUST)
-    slow_print("You must return to the cave.", ASH)
-
-
-def show_has_rope():
-    """The player has the rope."""
-    slow_print("You have the rope you took from the cave.", BONE)
-    slow_print("You can use it to secure your crossing.", ASH)
+    print()
+    slow_print("You do not have a rope.", RUST)
+    slow_print("You cannot safely secure the bridge.", ASH)
+    slow_print("You must return to the cave and find one.", ASH)
 
 
 def show_bridge_menu():
@@ -47,12 +74,11 @@ def show_invalid_bridge_choice():
     say("That is not an option. Choose 1, 2, 3 or 4.", RUST)
 
 
-def show_rope_crossing(name, hp):
-    """The player secured the rope and crossed."""
+def show_rope_secure(name, hp):
+    """The player secured the bridge with the rope."""
     print()
-    slow_print("You tie the rope around a strong wooden post.", ASH)
-    slow_print("You use it to steady yourself as you cross.", ASH)
-    slow_print("After a difficult journey, you reach the other side.", BONE)
+    slow_print("You use your rope to secure the damaged bridge.", ASH)
+    slow_print("The bridge is now stable enough to cross.", BONE)
     print()
     show_status(name, hp)
 
@@ -60,8 +86,7 @@ def show_rope_crossing(name, hp):
 def show_jump_fail(name, hp):
     """The player tried to jump the gap."""
     print()
-    slow_print("You try to jump across the broken section.", ASH)
-    slow_print("You lose your balance and fall back onto the bridge.", BONE)
+    slow_print("You attempt to jump across, but lose your balance.", ASH)
     slow_print("You lose 2 HP.", RUST)
     print()
     show_status(name, hp)
@@ -70,79 +95,129 @@ def show_jump_fail(name, hp):
 def show_wait_storm(name, hp):
     """The player waited out the storm."""
     print()
-    slow_print("You wait for the storm to calm.", ASH)
-    slow_print("The cold drains what little energy you have left.", BONE)
+    slow_print("You wait for the storm to calm down.", ASH)
     slow_print("You lose 1 HP.", RUST)
     print()
     show_status(name, hp)
 
 
-def show_no_key():
-    """The player crossed but has no key for the gate."""
-    print()
-    print(ground_line())
-    print()
-    slow_print("You cross the bridge and find an ancient gate.", ASH)
-    slow_print("It is locked. You need a key.", RUST)
-    slow_print("Return to the cave and search for the key.", ASH)
+# ---------- The three guardians ----------
+
+def show_first_guardian_intro():
+    """The statues come alive."""
+    _scene_title("THE FIRST GUARDIAN")
+    slow_print("Three stone statues suddenly come alive.", ASH)
+    slow_print("The first statue blocks the entrance to the bridge.", BONE)
 
 
-def show_gate_opens():
-    """The key fits the gate."""
+def show_first_riddle(repeat=False):
+    """The echo riddle."""
     print()
-    print(ground_line())
+    _speak(["The guardian speaks:"], ASH, repeat)
     print()
-    slow_print("An ancient gate stands on the other side of the bridge.", ASH)
-    slow_print("You insert your key into the lock, and the gate opens.", BONE)
+    _speak(["  'I speak without a mouth and hear without ears.",
+            "   I have no body, but I come alive with the wind.",
+            "   What am I?'"], BONE, repeat)
+    _show_options(["A shadow", "An echo", "A bird", "A ghost"])
 
 
-def show_guardian_riddle():
-    """The guardian and his riddle."""
+def show_first_guardian_passed():
+    """The player answered the first riddle."""
     print()
-    slow_print("Suddenly, an old guardian appears.", ASH)
-    slow_print("'Before you proceed, answer my riddle.'", BONE)
-    print()
-    slow_print("  What has cities but no houses,", BONE)
-    slow_print("  forests but no trees,", BONE)
-    slow_print("  and rivers but no water?", BONE)
-    print()
-    say("  1. A painting")
-    say("  2. A map")
-    say("  3. A book")
-    say("  4. A mirror")
-    print()
+    slow_print("Correct. The guardian moves aside.", BONE)
 
 
-def show_guardian_correct(name, hp):
-    """The player answered correctly."""
-    print()
-    slow_print("Correct. The guardian is impressed.", BONE)
-    slow_print("He steps aside and allows you to proceed.", ASH)
-    slow_print("Far off, you can see the lighthouse.", BONE)
-    print()
-    show_status(name, hp)
+def show_second_guardian_intro():
+    """The second guardian blocks the middle of the bridge."""
+    _scene_title("THE SECOND GUARDIAN")
+    slow_print("You walk towards the middle of the bridge.", ASH)
+    slow_print("Suddenly, the second stone guardian blocks your path.", BONE)
 
 
-def show_guardian_wrong(name, hp, can_retry):
-    """A wrong answer, with or without another attempt left."""
+def show_second_riddle(repeat=False):
+    """The water bottles riddle."""
     print()
-    say("Incorrect answer. You lose 1 HP.", RUST)
+    _speak(["The guardian says:"], ASH, repeat)
+    print()
+    _speak(["  'To cross this bridge, you must understand",
+            "   what you carry.'"], BONE, repeat)
+    print()
+    _speak(["A traveller enters the island carrying five water bottles.",
+            "He gives two away and finds three more.",
+            "How many bottles does he now have?"], ASH, repeat)
+    _show_options(["5", "6", "7", "8"])
+
+
+def show_second_guardian_passed():
+    """The player answered the second riddle."""
+    print()
+    slow_print("Correct. The guardian grants you permission to continue.", BONE)
+
+
+def show_final_guardian_intro():
+    """The iron gate at the end of the bridge."""
+    _scene_title("THE FINAL GUARDIAN")
+    slow_print("After passing the second guardian, you reach the exit of the bridge.", ASH)
+    slow_print("An iron gate blocks your way.", BONE)
+    slow_print("There is a keyhole in the middle, but no handle.", ASH)
+
+
+def show_final_riddle(repeat=False):
+    """The key riddle."""
+    print()
+    _speak(["An inscription reads:"], ASH, repeat)
+    print()
+    _speak(["  'I have teeth but cannot eat.",
+            "   I have a head but cannot think.",
+            "   I can open what others cannot.",
+            "   What am I?'"], BONE, repeat)
+    _show_options(["A key", "A sword", "A comb", "A hammer"])
+
+
+def show_gate_unlocked():
+    """The player answered correctly and has the key."""
+    print()
+    slow_print("Correct. You take out your key and unlock the gate.", BONE)
+    slow_print("The final guardian steps aside.", ASH)
+
+
+def show_no_key_for_gate():
+    """The player solved the riddle but has no key."""
+    print()
+    slow_print("You have solved the riddle, but you do not have a key.", RUST)
+    slow_print("You must return to the cave to find one.", ASH)
+
+
+def show_wrong_answer(name, hp, guardian, can_retry):
+    """A wrong answer to any guardian's riddle."""
+    print()
+    say("Wrong answer. You lose 1 HP.", RUST)
     show_status(name, hp)
     if can_retry:
-        say("You have one final attempt.", ASH)
+        say(RETRY_LINES[guardian], ASH)
 
 
-def show_guardian_refuses():
-    """The player ran out of attempts."""
+def show_invalid_answer():
+    """Bad input on a riddle."""
     print()
-    slow_print("The guardian refuses to let you proceed.", RUST)
-    slow_print("You must return and try again.", ASH)
+    say("That is not an option. Choose a number from 1 to 4.", RUST)
 
+
+# ---------- Ending the level ----------
 
 def show_bridge_death(name, hp):
     """The player's HP ran out at the bridge."""
     print()
     slow_print("The wind and the cold take the last of your strength.", RUST)
-    slow_print("You have run out of energy.", ASH)
+    slow_print("You have run out of HP.", ASH)
+    print()
+    show_status(name, hp)
+
+
+def show_bridge_completed(name, hp):
+    """The player is across."""
+    _scene_title("BRIDGE COMPLETED")
+    slow_print("You have crossed the old bridge.", BONE)
+    slow_print("In the distance, you can finally see the lighthouse.", ASH)
     print()
     show_status(name, hp)
